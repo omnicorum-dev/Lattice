@@ -1,0 +1,6 @@
+[submodule "vendor/Medium"]
+	path = vendor/Medium
+	url = git@github.com:omnicorum-dev/medium.git
+[submodule "vendor/Quartz"]
+	path = vendor/Quartz
+	url = git@github.com:omnicorum-dev/quartz.git
