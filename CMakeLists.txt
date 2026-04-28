@@ -16,3 +16,12 @@ target_include_directories(LatticeTesting PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(LatticeTesting PRIVATE Medium)
+
+set(ASSET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+add_custom_target(copy_lattice_assets ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${ASSET_DIR}
+        $<TARGET_FILE_DIR:LatticeTesting>/assets
+)
+
+add_dependencies(LatticeTesting copy_lattice_assets)

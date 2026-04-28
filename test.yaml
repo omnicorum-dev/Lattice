@@ -1,0 +1,31 @@
+Scene:
+  entities:
+    - name: cube
+      components:
+        Transform:
+          position: [0, 0, 3]
+        Model3D:
+          primitive: cylinder
+
+    - name: ground
+      components:
+        Transform:
+          position: [0, -3, 0]
+          scale: [2, 2, 2]
+        Model3D:
+          primitive: grid
+
+    - name: cube2
+      components:
+        Transform:
+          position: [3, 0, 3]
+        Model3D:
+          primitive: cube
+
+    - name: camera
+      components:
+        Camera3D:
+          position: [0, 0, 0]
+          fov: 60
+          nearPlane: 0.1
+          farPlane: 100
