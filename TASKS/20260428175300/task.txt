@@ -1,0 +1,7 @@
+20260428175300
+Render3D class
+50
+open
+feature,rednering,rendering
+
+Add a Render3D class that looks for a component on the parent (or maybe it should have children that are renderable). Example of renderable class is Model3D, eventually Sprite, Billboard. Etc. OR maybe there should just be a Renderable class that all of these other classes extend from. Model3D contains all the info needed to render itself. it has member variables lik Then, in the main engine frame loop, it can go through all the Renderable objects in the scene registry and render them.
