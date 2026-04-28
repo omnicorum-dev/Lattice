@@ -4,6 +4,7 @@
 
 #ifndef LATTICE_RENDER3D_H
 #define LATTICE_RENDER3D_H
+
 #include "graphite.h"
 #include "primitives.h"
 
@@ -44,7 +45,7 @@ namespace Lattice::Render3D {
                              const Camera3D& camera,
                              const int pointRadius,
                              const Graphite::Color& color) {
-        const float w   = canvas.getWidth();
+        const float w   = canvas.getWidth(); // NOLINT(*-narrowing-conversions)
         const float h   = canvas.getHeight();
         const auto  mvp = buildMVP(t, camera, w / h);
 
@@ -129,7 +130,7 @@ namespace Lattice::Render3D {
 
             // Fan triangulate
             const auto& p0 = pverts[0];
-            for (int i = 1; i + 1 < (int)pverts.size(); i++) {
+            for (int i = 1; i + 1 < static_cast<int>(pverts.size()); i++) {
                 const auto& p1 = pverts[i];
                 const auto& p2 = pverts[i + 1];
                 if (!p0.valid || !p1.valid || !p2.valid) continue;
@@ -186,7 +187,7 @@ namespace Lattice::Render3D {
             }
 
             const auto& p0 = pverts[0];
-            for (int i = 1; i + 1 < (int)pverts.size(); i++) {
+            for (int i = 1; i + 1 < static_cast<int>(pverts.size()); i++) {
                 const auto& p1 = pverts[i];
                 const auto& p2 = pverts[i + 1];
                 if (!p0.valid || !p1.valid || !p2.valid) continue;

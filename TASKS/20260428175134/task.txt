@@ -1,0 +1,7 @@
+20260428175134
+make process of starting an app easier
+75
+open
+feature,start,app
+
+Have some automated systems and just specify a custom global update and global start for anything extra the user wants to have happen

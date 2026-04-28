@@ -1,8 +1,98 @@
 #include <mediumOpenGL.h>
 #include <inputGLFW.h>
-#include <primitives.h>
-#include <registry.h>
-#include <render3D.h>
+#include <lattice.h>
+
+
+class CylinderBehaviour : public Lattice::Behaviour {
+private:
+    Lattice::Transform* transform = nullptr;
+public:
+    void Start() override {
+        LOG_INFO("Cylinder Start() function");
+        if (scene == nullptr) {
+            LOG_ERROR("CylinderBehaviour scene is nullptr!");
+            return;
+        } else {
+            LOG_INFO("CylinderBehaviour scene is valid");
+        }
+
+        transform = &getComponent<Lattice::Transform>();
+    }
+
+    void Update(float dt) override {
+        transform->rotateAroundAxis(Lattice::Dir3D::UP, dt * glm::radians(90.f));
+        transform->rotateAroundAxis(Lattice::Dir3D::RIGHT, dt * glm::radians(45.f));
+    }
+};
+
+class CameraBehaviour : public Lattice::Behaviour {
+private:
+    Lattice::Camera3D* camera = nullptr;
+    Input* input = nullptr;
+
+    float movementSpeed = 0.f;
+
+    Lattice::EntityID lookAtTarget = Lattice::NULL_ENTITY;
+
+    const float walkSpeed = 5.f;
+    const float sprintSpeed = 15.f;
+public:
+    void Start() override {
+        LOG_INFO("Camera Start() function");
+        if (scene == nullptr) {
+            LOG_ERROR("Camera scene is nullptr!");
+            return;
+        } else {
+            LOG_INFO("Camera scene is valid");
+        }
+
+        camera = &getComponent<Lattice::Camera3D>();
+
+        input = scene->input;
+        if (input == nullptr) {
+            LOG_ERROR("Camera input is nullptr!");
+        } else {
+            LOG_INFO("Camera input is valid");
+        }
+    }
+
+    void Update(float dt) override {
+        Lattice::Transform& cameraTrans = camera->transform;
+
+        if (lookAtTarget == Lattice::NULL_ENTITY) {
+            lookAtTarget = scene->findByName("Cube");
+        }
+
+        glm::vec3 movementVector{};
+        movementSpeed = walkSpeed;
+
+        if (input->isKeyPressed(MED_KEY_LEFT_SHIFT)) { movementSpeed = sprintSpeed; }
+
+        if (input->isKeyPressed(MED_KEY_W)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::FORWARD); }
+        if (input->isKeyPressed(MED_KEY_S)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::BACKWARD); }
+        if (input->isKeyPressed(MED_KEY_D)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::RIGHT); }
+        if (input->isKeyPressed(MED_KEY_A)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::LEFT); }
+        if (input->isKeyPressed(MED_KEY_E)) { movementVector += Lattice::Dir3D::UP; }
+        if (input->isKeyPressed(MED_KEY_Q)) { movementVector += Lattice::Dir3D::DOWN; }
+
+        glm::vec3 target{0.,0., 8.};
+        if (lookAtTarget != Lattice::NULL_ENTITY &&
+    scene->registry.hasComponent<Lattice::Transform>(lookAtTarget))
+        {
+            target = scene->registry.getComponent<Lattice::Transform>(lookAtTarget).position;
+        }
+
+        cameraTrans.lookAt(target);
+
+        if (glm::length(movementVector) >= 0.001f) {
+            movementVector = normalize(movementVector);
+        }
+
+        movementVector *= movementSpeed;
+
+        cameraTrans.position += movementVector * dt;
+    }
+};
 
 using Lattice::EntityID;
 
@@ -15,12 +105,9 @@ InputGLFW input;
 std::filesystem::path assetPath = game.getAssetRoot();
 std::filesystem::path savePath = game.getSaveRoot();
 
-Lattice::Registry   registry;
-Lattice::SceneGraph graph;
+Lattice::Scene* scene;
 
-EntityID cubeID = registry.createEntity();
-EntityID groundID = registry.createEntity();
-EntityID cameraID = registry.createEntity();
+EntityID cameraID = Lattice::NULL_ENTITY;
 
 Shader crt = 0;
 
@@ -34,64 +121,34 @@ constexpr float turnSpeed = glm::radians(60.f);
 void update(float dt) {
 
     // PREPARE
-
-    auto* camera = registry.tryGetComponent<Lattice::Camera3D>(cameraID);
-    auto* cubeTrans = registry.tryGetComponent<Lattice::Transform>(cubeID);
-
+    auto* camera = scene->registry.tryGetComponent<Lattice::Camera3D>(cameraID);
     if (camera == nullptr) {
         LOG_ERROR("No Lattice::Camera3D found with ID {}", cameraID);
         camera = new Lattice::Camera3D();
     }
-
     Lattice::Transform& cameraTrans = camera->transform;
 
-    // INPUT
+    // Run Objects
 
-    glm::vec3 movementVector{};
-    float movementSpeed = walkSpeed;
+    scene->registry.each<Lattice::Behaviours>(
+    [&](const EntityID id, Lattice::Behaviours& behaviour)
+    {
+        bool runStart = false;
+        if (!behaviour.started) {
+            runStart = true;
+            behaviour.started = true;
+        }
 
-    if (input.isKeyPressed(MED_KEY_LEFT_SHIFT)) { movementSpeed = sprintSpeed; }
-
-    if (input.isKeyPressed(MED_KEY_W)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::FORWARD); }
-    if (input.isKeyPressed(MED_KEY_S)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::BACKWARD); }
-    if (input.isKeyPressed(MED_KEY_D)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::RIGHT); }
-    if (input.isKeyPressed(MED_KEY_A)) { movementVector += cameraTrans.yawDirection(Lattice::Dir3D::LEFT); }
-    if (input.isKeyPressed(MED_KEY_E)) { movementVector += Lattice::Dir3D::UP; }
-    if (input.isKeyPressed(MED_KEY_Q)) { movementVector += Lattice::Dir3D::DOWN; }
-
-    /*
-    if (input.isKeyPressed(MED_KEY_L)) { cameraTrans.rotateAroundAxis(Lattice::Dir3D::UP,  turnSpeed * dt); }
-    if (input.isKeyPressed(MED_KEY_J)) { cameraTrans.rotateAroundAxis(Lattice::Dir3D::UP, -turnSpeed * dt); }
-    constexpr float pitchLimit = glm::radians(85.f);
-
-    if (input.isKeyPressed(MED_KEY_I)) {
-        const glm::vec3 forward      = cameraTrans.localDirection(Lattice::Dir3D::FORWARD);
-        const float     currentPitch = glm::asin(glm::clamp(-forward.y, -1.f, 1.f));
-        if (currentPitch > -pitchLimit)
-            cameraTrans.rotateAroundAxis(cameraTrans.localDirection(Lattice::Dir3D::RIGHT), -turnSpeed * dt);
-    }
-    if (input.isKeyPressed(MED_KEY_K)) {
-        const glm::vec3 forward      = cameraTrans.localDirection(Lattice::Dir3D::FORWARD);
-        const float     currentPitch = glm::asin(glm::clamp(-forward.y, -1.f, 1.f));
-        if (currentPitch < pitchLimit)
-            cameraTrans.rotateAroundAxis(cameraTrans.localDirection(Lattice::Dir3D::RIGHT),  turnSpeed * dt);
-    }
-    */
-
-    cameraTrans.lookAt(cubeTrans->position);
-
-    if (glm::length(movementVector) >= 0.001f) {
-        movementVector = normalize(movementVector);
-    }
-
-    movementVector *= movementSpeed;
-
-    // OBJECT UPDATES
-
-    cameraTrans.position += movementVector * dt;
-
-    cubeTrans->rotateAroundAxis(Lattice::Dir3D::UP, dt * glm::radians(90.f));
-    cubeTrans->rotateAroundAxis(Lattice::Dir3D::RIGHT, dt * glm::radians(45.f));
+        for (const auto& s : behaviour.list)
+        {
+            if (runStart)
+            {
+                s->entity = id;
+                s->Start();
+            }
+            s->Update(dt);
+        }
+    });
 
     // RENDERING
 
@@ -102,11 +159,11 @@ void update(float dt) {
     const float frameRate = 1.f/dt;
     std::string s = "fps: " + std::to_string(frameRate);
 
-    registry.each<Lattice::Transform, Lattice::Model3D>(
+    scene->registry.each<Lattice::Transform, Lattice::Model3D>(
         [&](EntityID id, const Lattice::Transform& t, const Lattice::Model3D& model) {
             //Lattice::Render3D::renderWireframe(canvas, t, model, *camera, 1, Graphite::Colors::Blue);
             Lattice::Render3D::renderFlat(canvas, t, model, *camera, Graphite::Colors::LightBlue, true, Lattice::Dir3D::UP, &zBuffer);
-            //Lattice::Render3D::renderPoints(canvas, t, model, *camera, 1, Graphite::Colors::Red);
+            Lattice::Render3D::renderPoints(canvas, t, model, *camera, 1, Graphite::Colors::Red);
         }
     );
 
@@ -121,46 +178,59 @@ void start() {
     crt = MediumOpenGL::buildShader(assetPath / "crt.frag");
     game.setScreenShader(crt);
 
-    registry.addComponent(cubeID, Lattice::Transform{
+    scene = &Lattice::ActiveScene::get();
+    scene->input = &input;
+
+    EntityID tmp = scene->createEntity("Cube");
+    scene->registry.addComponent(tmp, Lattice::Transform{
         .position = {0.f, 0.f, 3.f}
     });
-    registry.addComponent(cubeID, Lattice::Primitives::cylinder());
+    scene->registry.addComponent(tmp, Lattice::Primitives::cylinder());
+    Lattice::addScript<CylinderBehaviour>(*scene, tmp);
 
-    registry.addComponent(groundID, Lattice::Transform{
+    tmp = scene->createEntity("Ground");
+    scene->registry.addComponent(tmp, Lattice::Transform{
         .position = {0.f, -3.f, 0.f},
         .scale = {2.f, 2.f, 2.f}}
     );
-    registry.addComponent(groundID, Lattice::Primitives::grid());
+    scene->registry.addComponent(tmp, Lattice::Primitives::grid());
 
-    const EntityID s1 = registry.createEntity();
-    registry.addComponent(s1, Lattice::Transform{
+    tmp = scene->createEntity("s1");
+    scene->registry.addComponent(tmp, Lattice::Transform{
         .position = {3.f, 0.f, 3.f}
     });
-    registry.addComponent(s1, Lattice::Primitives::cube());
+    scene->registry.addComponent(tmp, Lattice::Primitives::cube());
 
-    const EntityID s2 = registry.createEntity();
-    registry.addComponent(s2, Lattice::Transform{
+    tmp = scene->createEntity("s2");
+    scene->registry.addComponent(tmp, Lattice::Transform{
         .position = {3.f, 0.f, 5.f}
     });
-    registry.addComponent(s2, Lattice::Primitives::cube());
+    scene->registry.addComponent(tmp, Lattice::Primitives::cube());
 
-    const EntityID s3 = registry.createEntity();
-    registry.addComponent(s3, Lattice::Transform{
+    tmp = scene->createEntity("s3");
+    scene->registry.addComponent(tmp, Lattice::Transform{
         .position = {0.f, -1.f, 3.f}
     });
-    registry.addComponent(s3, Lattice::Primitives::cube());
+    scene->registry.addComponent(tmp, Lattice::Primitives::cube());
 
-
-    registry.addComponent(cameraID, Lattice::Camera3D{
+    tmp = scene->createEntity("Camera");
+    scene->registry.addComponent(tmp, Lattice::Camera3D{
         .transform  = { .position = {0.f, 0.f, 0.f} },
         .fov        = glm::radians(60.f),
         .nearPlane  = 0.1f,
         .farPlane   = 100.f
     });
+    Lattice::addScript<CameraBehaviour>(*scene, tmp);
+
+    cameraID = scene->findByName("Camera");
+    if (cameraID == Lattice::NULL_ENTITY)
+        throw std::runtime_error("Camera not found");
 }
 
 int main() {
     LOG_INFO("Hello {}", 69);
+    Lattice::Scene s;
+    Lattice::ActiveScene::set(&s);
     game.mediumStartup();
     start();
     game.mediumRun(update);

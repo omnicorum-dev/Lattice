@@ -10,8 +10,229 @@
 #include <unordered_set>
 #include <glm/glm.hpp>
 
-#include "primitives.h"
+namespace Lattice {
+    using EntityID = uint32_t;
+    inline constexpr EntityID NULL_ENTITY = std::numeric_limits<EntityID>::max();
 
+    // ==================== STORAGE LAYER ====================
+
+    struct IStorage {
+        virtual void destroy(EntityID id) = 0;
+        virtual ~IStorage() = default;
+    };
+
+    template<typename T>
+    struct Storage : IStorage {
+        std::unordered_map<EntityID, T> data;
+
+        void destroy(EntityID id) override {
+            data.erase(id);
+        }
+    };
+
+    // ==================== REGISTRY ====================
+
+    struct Registry {
+        // -------- Entity management --------
+        EntityID createEntity();
+        void destroyEntity(EntityID id);
+        [[nodiscard]] bool alive(EntityID id) const;
+
+        [[nodiscard]] const std::unordered_set<EntityID>& entities() const;
+
+        // -------- Components --------
+        template<typename T>
+        T& addComponent(EntityID id, T component);
+
+        template<typename T>
+        T& getComponent(EntityID id);
+
+        template<typename T>
+        const T& getComponent(EntityID id) const;
+
+        template<typename T>
+        T* tryGetComponent(EntityID id);
+
+        template<typename T>
+        const T* tryGetComponent(EntityID id) const;
+
+        template<typename T>
+        bool hasComponent(EntityID id) const;
+
+        template<typename T>
+        void removeComponent(EntityID id);
+
+        // -------- Iteration --------
+        template<typename... Ts, typename Fn>
+        void each(Fn&& fn);
+
+    private:
+        EntityID _nextID = 0;
+        std::unordered_set<EntityID> _alive;
+
+        std::unordered_map<std::type_index, std::unique_ptr<IStorage>> _components;
+
+        template<typename T>
+        Storage<T>& getStorage();
+
+        template<typename T>
+        const Storage<T>& getStorage() const;
+    };
+}
+
+
+#ifndef LATTICE_NO_IMPLEMENTATION
+
+namespace Lattice {
+
+    // ==================== ENTITY ====================
+
+    inline EntityID Registry::createEntity() {
+        EntityID id = _nextID++;
+        _alive.insert(id);
+        return id;
+    }
+
+    inline void Registry::destroyEntity(EntityID id) {
+        _alive.erase(id);
+
+        for (auto& [type, storage] : _components) {
+            storage->destroy(id);
+        }
+    }
+
+    inline bool Registry::alive(EntityID id) const {
+        return _alive.find(id) != _alive.end();
+    }
+
+    inline const std::unordered_set<EntityID>& Registry::entities() const {
+        return _alive;
+    }
+
+    // ==================== STORAGE ACCESS ====================
+
+    template<typename T>
+    Storage<T>& Registry::getStorage() {
+        auto type = std::type_index(typeid(T));
+
+        auto it = _components.find(type);
+        if (it == _components.end()) {
+            auto storage = std::make_unique<Storage<T>>();
+            auto* ptr = storage.get();
+            _components[type] = std::move(storage);
+            return *ptr;
+        }
+
+        return *static_cast<Storage<T>*>(it->second.get());
+    }
+
+    template<typename T>
+    const Storage<T>& Registry::getStorage() const {
+        auto it = _components.find(std::type_index(typeid(T)));
+        if (it == _components.end())
+            throw std::runtime_error("Storage does not exist");
+
+        return *static_cast<Storage<T>*>(it->second.get());
+    }
+
+    // ==================== COMPONENT API ====================
+
+    template<typename T>
+    T& Registry::addComponent(EntityID id, T component) {
+        auto& store = getStorage<T>().data;
+        store[id] = std::move(component);
+        return store.at(id);
+    }
+
+    template<typename T>
+    T& Registry::getComponent(EntityID id) {
+        auto& store = getStorage<T>().data;
+
+        auto it = store.find(id);
+        if (it == store.end())
+            throw std::runtime_error("Missing component");
+
+        return it->second;
+    }
+
+    template<typename T>
+    const T& Registry::getComponent(EntityID id) const {
+        const auto& store = getStorage<T>().data;
+
+        auto it = store.find(id);
+        if (it == store.end())
+            throw std::runtime_error("Missing component");
+
+        return it->second;
+    }
+
+    template<typename T>
+    T* Registry::tryGetComponent(EntityID id) {
+        auto& store = getStorage<T>().data;
+
+        auto it = store.find(id);
+        return (it == store.end()) ? nullptr : &it->second;
+    }
+
+    template<typename T>
+    const T* Registry::tryGetComponent(EntityID id) const {
+        const auto& store = getStorage<T>().data;
+
+        auto it = store.find(id);
+        return (it == store.end()) ? nullptr : &it->second;
+    }
+
+    template<typename T>
+    bool Registry::hasComponent(EntityID id) const {
+        auto it = _components.find(std::type_index(typeid(T)));
+        if (it == _components.end()) return false;
+
+        const auto& store = static_cast<const Storage<T>*>(it->second.get())->data;
+        return store.find(id) != store.end();
+    }
+
+    template<typename T>
+    void Registry::removeComponent(EntityID id) {
+        getStorage<T>().data.erase(id);
+    }
+
+    // ==================== ITERATION ====================
+
+    template<typename... Ts, typename Fn>
+    void Registry::each(Fn&& fn) {
+        for (EntityID id : _alive) {
+            if ((hasComponent<Ts>(id) && ...)) {
+                fn(id, getComponent<Ts>(id)...);
+            }
+        }
+    }
+
+} // namespace Lattice
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 namespace Lattice {
     // ==================== ENTITY / REGISTRY ====================
 
@@ -145,131 +366,70 @@ namespace Lattice {
     private:
         EntityID                                                     _nextID  = 0;
         std::unordered_set<EntityID>                                 _alive;
+        /*
         std::unordered_map<std::type_index,
             std::unordered_map<EntityID, std::any>>                  _components;
+            */
 
+        std::unordered_map<std::type_index, std::any> _components;
+
+        /*
         template<typename T>
         std::unordered_map<EntityID, std::any>& _store();
 
         template<typename T>
         const std::unordered_map<EntityID, std::any>& _store() const;
+        */
+
+        template<typename T>
+        std::unordered_map<EntityID, T>& _store();
+
+        template<typename T>
+        const std::unordered_map<EntityID, T>& _store() const;
     };
 
-
-    // ==================== SCENE GRAPH ====================
-
-    /**
-     * @brief A node in the scene hierarchy, wrapping an EntityID.
-     *
-     * SceneNode manages parent/child relationships between entities.
-     * World-space transforms are computed by composing transforms up
-     * the chain from root to node. The Registry is the source of truth
-     * for Transform components — SceneNode only stores the relationships.
-     *
-     * ### Typical usage
-     * @code
-     * SceneGraph graph;
-     * EntityID parent = registry.createEntity();
-     * EntityID child  = registry.createEntity();
-     * registry.addComponent(parent, Transform{});
-     * registry.addComponent(child,  Transform{});
-     *
-     * graph.setParent(child, parent);
-     * Transform world = graph.worldTransform(child, registry);
-     * @endcode
-     */
-    struct SceneGraph {
-        /**
-         * @brief Set the parent of an entity.
-         *
-         * Removes any existing parent relationship first. Passing NULL_ENTITY
-         * detaches the entity from its parent, making it a root node.
-         *
-         * @param child  Entity to reparent.
-         * @param parent New parent entity, or NULL_ENTITY to detach.
-         */
-        void setParent(EntityID child, EntityID parent);
-
-        /**
-         * @brief Detach an entity from its parent, making it a root node.
-         * @param id Entity to detach.
-         */
-        void detach(EntityID id);
-
-        /**
-         * @brief Get the parent of an entity.
-         * @param id Entity to query.
-         * @return Parent EntityID, or NULL_ENTITY if this is a root node.
-         */
-        [[nodiscard]] EntityID parent(EntityID id) const;
-
-        /**
-         * @brief Get the direct children of an entity.
-         * @param id Entity to query.
-         * @return Set of child EntityIDs. Empty if the entity has no children.
-         */
-        [[nodiscard]] const std::unordered_set<EntityID>& children(EntityID id) const;
-
-        /**
-         * @brief Check whether an entity has a parent.
-         * @param id Entity to query.
-         * @return `true` if the entity has a parent.
-         */
-        [[nodiscard]] bool hasParent(EntityID id) const;
-
-        /**
-         * @brief Compute the world-space transform of an entity.
-         *
-         * Walks up the parent chain composing transforms via operator*.
-         * Entities without a Transform component are treated as identity.
-         * Result is cached — call invalidate() when a transform changes.
-         *
-         * @param id       Entity to query.
-         * @param registry Registry to read Transform components from.
-         * @return World-space transform.
-         */
-        [[nodiscard]] Transform worldTransform(EntityID id, const Registry& registry);
-
-        /**
-         * @brief Mark an entity's cached world transform as dirty.
-         *
-         * Call this whenever a Transform component is modified directly.
-         * Also invalidates all descendants.
-         *
-         * @param id Entity whose transform changed.
-         */
-        void invalidate(EntityID id);
-
-        /**
-         * @brief Remove an entity from the scene graph entirely.
-         *
-         * Children are detached and become root nodes rather than being
-         * destroyed — destroy them explicitly via the Registry if needed.
-         *
-         * @param id Entity to remove.
-         */
-        void remove(EntityID id);
-
-    private:
-        std::unordered_map<EntityID, EntityID>                     _parents;
-        std::unordered_map<EntityID, std::unordered_set<EntityID>> _children;
-        std::unordered_map<EntityID, Transform>                    _worldCache;
-        std::unordered_set<EntityID>                               _dirty;
-        inline static const std::unordered_set<EntityID>           _emptyChildren{};
-
-        void _invalidateRecursive(EntityID id);
+    struct Prefab {
+        std::function<EntityID(Registry&)> spawn;
     };
+
+    /* EXAMPLE PREFAB
+    Prefab playerPrefab = {
+        [](Registry& reg)
+        {
+            EntityID e = reg.createEntity();
+
+            reg.addComponent(e, Behaviours{});
+            auto& behaviours = reg.getComponent<Behaviours>(e);
+
+            behaviours.list.push_back(std::make_unique<PlayerController>());
+            behaviours.list.push_back(std::make_unique<GunController>());
+            behaviours.list.push_back(std::make_unique<HealthRegen>());
+
+            return e;
+        }
+    }
+    */
+
+    /* RUNTIME UPDATE SYSTEM
+    registry.each<Behaviours>(
+    [&](EntityID id, Behaviours& behaviour)
+    {
+        for (auto& s : behaviour.list)
+        {
+            if (!behaviour->started)
+            {
+                s->entity = id;
+                s->Start();
+                s->started = true;
+            }
+            s->Update(dt);
+        }
+    });
+    */
 }
+#endif
 
-
-
-
-
-
-
-
-
-
+#if 0
 #ifndef LATTICE_NO_IMPLEMENTATION
 namespace Lattice {
     // ==================== REGISTRY ====================
@@ -282,8 +442,11 @@ namespace Lattice {
 
     inline void Registry::destroyEntity(const EntityID id) {
         _alive.erase(id);
-        for (auto& [type, store] : _components)
+
+        for (auto& [type, anyStore] : _components) {
+            auto& store = std::any_cast<std::unordered_map<EntityID, std::any>&>(anyStore);
             store.erase(id);
+        }
     }
 
     inline bool Registry::alive(const EntityID id) const {
@@ -293,8 +456,8 @@ namespace Lattice {
     template<typename T>
     T& Registry::addComponent(const EntityID id, T component) {
         auto& store = _store<T>();
-        store[id]   = std::move(component);
-        return std::any_cast<T&>(store.at(id));
+        store.emplace(id, std::move(component));
+        return store.at(id);
     }
 
     template<typename T>
@@ -303,7 +466,7 @@ namespace Lattice {
         auto  it    = store.find(id);
         if (it == store.end())
             throw std::runtime_error("Entity does not have requested component.");
-        return std::any_cast<T&>(it->second);
+        return it->second;
     }
 
     template<typename T>
@@ -312,7 +475,7 @@ namespace Lattice {
         const auto  it    = store.find(id);
         if (it == store.end())
             throw std::runtime_error("Entity does not have requested component.");
-        return std::any_cast<const T&>(it->second);
+        return it->second;
     }
 
     template<typename T>
@@ -320,7 +483,7 @@ namespace Lattice {
         auto& store = _store<T>();
         auto  it    = store.find(id);
         if (it == store.end()) return nullptr;
-        return &std::any_cast<T&>(it->second);
+        return &it->second;
     }
 
     template<typename T>
@@ -328,7 +491,7 @@ namespace Lattice {
         const auto& store = _store<T>();
         const auto  it    = store.find(id);
         if (it == store.end()) return nullptr;
-        return &std::any_cast<const T&>(it->second);
+        return &it->second;
     }
 
     template<typename T>
@@ -362,6 +525,7 @@ namespace Lattice {
         return _alive;
     }
 
+    /*
     template<typename T>
     std::unordered_map<EntityID, std::any>& Registry::_store() {
         return _components[std::type_index(typeid(T))];
@@ -371,84 +535,27 @@ namespace Lattice {
     const std::unordered_map<EntityID, std::any>& Registry::_store() const {
         return _components.at(std::type_index(typeid(T)));
     }
+    */
 
-
-    // ==================== SCENE GRAPH ====================
-
-    inline void SceneGraph::setParent(const EntityID child, const EntityID parent) {
-        detach(child);
-        if (parent == NULL_ENTITY) return;
-        _parents[child] = parent;
-        _children[parent].insert(child);
-        _invalidateRecursive(child);
+    template<typename T>
+    std::unordered_map<EntityID, T>& Registry::_store()
+    {
+        return std::any_cast<std::unordered_map<EntityID, T>&>(
+            _components[std::type_index(typeid(T))]
+        );
     }
 
-    inline void SceneGraph::detach(const EntityID id) {
-        const auto it = _parents.find(id);
-        if (it == _parents.end()) return;
-        _children[it->second].erase(id);
-        _parents.erase(it);
-        _invalidateRecursive(id);
+    template<typename T>
+    const std::unordered_map<EntityID, T>& Registry::_store() const
+    {
+        return std::any_cast<const std::unordered_map<EntityID, T>&>(
+            _components.at(std::type_index(typeid(T)))
+        );
     }
 
-    inline EntityID SceneGraph::parent(const EntityID id) const {
-        const auto it = _parents.find(id);
-        return it != _parents.end() ? it->second : NULL_ENTITY;
-    }
 
-    inline const std::unordered_set<EntityID>& SceneGraph::children(const EntityID id) const {
-        const auto it = _children.find(id);
-        return it != _children.end() ? it->second : _emptyChildren;
-    }
-
-    inline bool SceneGraph::hasParent(const EntityID id) const {
-        return _parents.find(id) != _parents.end();
-    }
-
-    inline Transform SceneGraph::worldTransform(const EntityID id, const Registry& registry) {
-        // Return cached result if clean.
-        if (_dirty.find(id) == _dirty.end()) {
-            const auto it = _worldCache.find(id);
-            if (it != _worldCache.end()) return it->second;
-        }
-
-        const Transform local = registry.hasComponent<Transform>(id)
-            ? registry.getComponent<Transform>(id)
-            : Transform{};
-
-        Transform world = local;
-        if (hasParent(id))
-            world = worldTransform(_parents.at(id), registry) * local;
-
-        _worldCache[id] = world;
-        _dirty.erase(id);
-        return world;
-    }
-
-    inline void SceneGraph::invalidate(const EntityID id) {
-        _invalidateRecursive(id);
-    }
-
-    inline void SceneGraph::remove(const EntityID id) {
-        // Detach children — they become root nodes.
-        if (_children.find(id) != _children.end()) {
-            for (const EntityID child : _children.at(id))
-                _parents.erase(child);
-            _children.erase(id);
-        }
-        detach(id);
-        _worldCache.erase(id);
-        _dirty.erase(id);
-    }
-
-    inline void SceneGraph::_invalidateRecursive(const EntityID id) {
-        _dirty.insert(id);
-        _worldCache.erase(id);
-        if (_children.find(id) == _children.end()) return;
-        for (const EntityID child : _children.at(id))
-            _invalidateRecursive(child);
-    }
 }
+#endif
 #endif
 
 #endif //LATTICE_REGISTRY_H
