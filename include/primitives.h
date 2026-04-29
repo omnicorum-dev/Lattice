@@ -1024,271 +1024,280 @@ namespace Lattice {
 
     namespace Primitives {
 
-        inline std::vector<Model3D::FaceIndex> tri(
-            glm::i32 a, glm::i32 b, glm::i32 c,           // vertex indices
-            glm::i32 ta, glm::i32 tb, glm::i32 tc,        // uv indices
-            glm::i32 na, glm::i32 nb, glm::i32 nc)        // normal indices
-        {
-                return { {a, ta, na}, {b, tb, nb}, {c, tc, nc} };
+        inline Model3D::FaceIndex V(int v, int t, int n) {
+            return {v, t, n};
         }
 
-        // Overload for when vertex, uv, and normal indices are all the same
-        inline std::vector<Model3D::FaceIndex> tri(glm::i32 a, glm::i32 b, glm::i32 c) {
-            return tri(a, b, c, a, b, c, a, b, c);
+        inline std::vector<Model3D::FaceIndex> face(
+            int a, int b, int c,
+            int ta, int tb, int tc,
+            int na, int nb, int nc)
+        {
+            return { V(a,ta,na), V(b,tb,nb), V(c,tc,nc) };
         }
 
         inline Model3D cube() {
             Model3D m;
 
-            // 8 corners
             m.vertices = {
-                {-0.5f, -0.5f, -0.5f}, { 0.5f, -0.5f, -0.5f},
-                { 0.5f,  0.5f, -0.5f}, {-0.5f,  0.5f, -0.5f},
-                {-0.5f, -0.5f,  0.5f}, { 0.5f, -0.5f,  0.5f},
-                { 0.5f,  0.5f,  0.5f}, {-0.5f,  0.5f,  0.5f},
+            {-0.5f,-0.5f,-0.5f}, {0.5f,-0.5f,-0.5f},
+            {0.5f, 0.5f,-0.5f},  {-0.5f, 0.5f,-0.5f},
+            {-0.5f,-0.5f, 0.5f}, {0.5f,-0.5f, 0.5f},
+            {0.5f, 0.5f, 0.5f},  {-0.5f, 0.5f, 0.5f}
             };
 
-            // 6 face normals
             m.normals = {
-                { 0,  0, -1}, { 0,  0,  1},
-                {-1,  0,  0}, { 1,  0,  0},
-                { 0, -1,  0}, { 0,  1,  0},
+            { 0, 0,-1}, { 0, 0, 1},
+            {-1, 0, 0}, { 1, 0, 0},
+            { 0,-1, 0}, { 0, 1, 0}
             };
 
-            // UVs (each face maps to full [0,1])
-            m.uvs = {
-                {0, 0}, {1, 0}, {1, 1}, {0, 1}
-            };
+            m.uvs = {{0,0},{1,0},{1,1},{0,1}};
 
-            // Each face: 2 triangles (CCW winding), all verts share the face normal
-            // {vertexIdx, texCoordIdx, normalIdx}
-            auto face = [&](int a, int b, int c, int d, int n) {
-                m.faces.push_back({ {a,0,n},{b,1,n},{c,2,n} });
-                m.faces.push_back({ {a,0,n},{c,2,n},{d,3,n} });
-            };
+            // BACK (-Z)
+            m.faces.push_back({{0,3,0},{2,1,0},{1,2,0}});
+            m.faces.push_back({{0,3,0},{3,0,0},{2,1,0}});
 
-            face(0, 1, 2, 3, 0); // back
-            face(5, 4, 7, 6, 1); // front
-            face(4, 0, 3, 7, 2); // left
-            face(1, 5, 6, 2, 3); // right
-            face(4, 5, 1, 0, 4); // bottom
-            face(3, 2, 6, 7, 5); // top
+            // FRONT (+Z)
+            m.faces.push_back({{4,0,1},{5,1,1},{6,2,1}});
+            m.faces.push_back({{4,0,1},{6,2,1},{7,3,1}});
+
+            // LEFT
+            m.faces.push_back({{0,1,2},{7,2,2},{3,3,2}});
+            m.faces.push_back({{0,1,2},{4,0,2},{7,2,2}});
+
+            // RIGHT
+            m.faces.push_back({{1,0,3},{6,2,3},{5,1,3}});
+            m.faces.push_back({{1,0,3},{2,3,3},{6,2,3}});
+
+            // BOTTOM
+            m.faces.push_back({{0,0,4},{5,2,4},{4,1,4}});
+            m.faces.push_back({{0,0,4},{1,3,4},{5,2,4}});
+
+            // TOP
+            m.faces.push_back({{3,0,5},{6,2,5},{2,1,5}});
+            m.faces.push_back({{3,0,5},{7,3,5},{6,2,5}});
 
             return m;
         }
 
-        inline Model3D sphere(const float radius, const glm::u32 sectors, const glm::u32 stacks) {
+        inline Model3D sphere(float radius, uint32_t sectors, uint32_t stacks) {
             Model3D m;
 
-            for (glm::u32 i = 0; i <= stacks; i++) {
-                const float phi    = glm::pi<float>() * static_cast<float>(i) / static_cast<float>(stacks); // 0..pi
-                const float sinPhi = glm::sin(phi);
-                const float cosPhi = glm::cos(phi);
+            for (uint32_t i = 0; i <= stacks; i++) {
+                float v = float(i) / float(stacks);
+                float phi = v * glm::pi<float>();
 
-                for (glm::u32 j = 0; j <= sectors; j++) {
-                    const float theta    = 2.f * glm::pi<float>() * static_cast<float>(j) / static_cast<float>(sectors);
-                    const float sinTheta = glm::sin(theta);
-                    const float cosTheta = glm::cos(theta);
+                float y = cos(phi);
+                float r = sin(phi);
 
-                    const glm::vec3 normal { sinPhi * cosTheta, cosPhi, sinPhi * sinTheta };
-                    m.vertices.push_back(normal * radius);
-                    m.normals.push_back(normal);
-                    m.uvs.emplace_back( static_cast<float>(j) / static_cast<float>(sectors),
-                                      static_cast<float>(i) / static_cast<float>(stacks) );
+                for (uint32_t j = 0; j <= sectors; j++) {
+                    float u = float(j) / float(sectors);
+                    float theta = u * 2.f * glm::pi<float>();
+
+                    glm::vec3 p{
+                        r * sin(theta),   // X
+                        y,                // Y
+                        -r * cos(theta)   // Z = IMPORTANT (-Z forward alignment)
+                    };
+
+                    m.vertices.push_back(p * radius);
+                    m.normals.push_back(glm::normalize(p));
+                    m.uvs.emplace_back(u, v);
                 }
             }
 
-            // Build faces
-            for (glm::u32 i = 0; i < stacks; i++) {
-                for (glm::u32 j = 0; j < sectors; j++) {
-                    const glm::u32 a = i       * (sectors + 1) + j;
-                    const glm::u32 b = a       + 1;
-                    const glm::u32 c = (i + 1) * (sectors + 1) + j;
-                    const glm::u32 d = c       + 1;
+            for (uint32_t i = 0; i < stacks; i++) {
+                for (uint32_t j = 0; j < sectors; j++) {
 
-                    if (i != 0)          // skip degenerate top cap
-                        m.faces.push_back(tri(a, d, b));
-                    if (i != stacks - 1) // skip degenerate bottom cap
-                        m.faces.push_back(tri(a, c, d));
-                }
-            }
+                    int a = i * (sectors + 1) + j;
+                    int b = a + 1;
+                    int c = (i + 1) * (sectors + 1) + j;
+                    int d = c + 1;
 
-            return m;
-        }
+                    if (i != 0)
+                        m.faces.push_back({{a,a,a},{b,b,b},{c,c,c}});  // swap b and c
 
-        inline Model3D grid(const float width, const float depth,
-                            const glm::u32 cellsX, const glm::u32 cellsZ) {
-            Model3D m;
-
-            const float dx = width / static_cast<float>(cellsX);
-            const float dz = depth / static_cast<float>(cellsZ);
-
-            for (glm::u32 z = 0; z <= cellsZ; z++) {
-                for (glm::u32 x = 0; x <= cellsX; x++) {
-                    m.vertices.emplace_back( -width * 0.5f + static_cast<float>(x) * dx,
-                                            0.f,
-                                           -depth * 0.5f + static_cast<float>(z) * dz );
-                    m.normals.push_back(Dir3D::UP);
-                    m.uvs.emplace_back( static_cast<float>(x) / static_cast<float>(cellsX),
-                                       static_cast<float>(z) / static_cast<float>(cellsZ) );
-                }
-            }
-
-            for (glm::u32 z = 0; z < cellsZ; z++) {
-                for (glm::u32 x = 0; x < cellsX; x++) {
-                    const glm::u32 a = z       * (cellsX + 1) + x;
-                    const glm::u32 b = a       + 1;
-                    const glm::u32 c = (z + 1) * (cellsX + 1) + x;
-                    const glm::u32 d = c       + 1;
-
-                    m.faces.push_back(tri(a,b,d));
-                    m.faces.push_back(tri(a,d,c));
+                    if (i != stacks - 1)
+                        m.faces.push_back({{b,b,b},{d,d,d},{c,c,c}});  // swap c and d
                 }
             }
 
             return m;
         }
 
-        inline Model3D cylinder(const float radius, const float height, const glm::u32 sectors) {
+        inline Model3D grid(float width, float depth, uint32_t cellsX, uint32_t cellsZ) {
             Model3D m;
 
-            const float half = height * 0.5f;
-            const float step = 2.f * glm::pi<float>() / static_cast<float>(sectors);
+            float dx = width / cellsX;
+            float dz = depth / cellsZ;
 
-            // Barrel vertices — two rings (bottom and top)
-            for (glm::u32 i = 0; i < 2; i++) {
-                const float y = i == 0 ? -half : half;
-                for (glm::u32 j = 0; j <= sectors; j++) {
-                    const float theta = static_cast<float>(j) * step;
-                    const glm::vec3 normal { glm::cos(theta), 0.f, glm::sin(theta) };
-                    m.vertices.emplace_back( normal.x * radius, y, normal.z * radius );
-                    m.normals.push_back(normal);
-                    m.uvs.emplace_back( static_cast<float>(j) / static_cast<float>(sectors),
-                                       static_cast<float>(i) );
+            for (uint32_t z = 0; z <= cellsZ; z++) {
+                for (uint32_t x = 0; x <= cellsX; x++) {
+                    m.vertices.emplace_back(
+                        -width * 0.5f + x * dx,
+                        0.f,
+                        -depth * 0.5f + z * dz
+                    );
+                    m.normals.push_back({0,1,0});
+                    m.uvs.emplace_back(
+                        float(x)/cellsX,
+                        float(z)/cellsZ
+                    );
                 }
             }
 
-            // Barrel faces
-            for (glm::u32 j = 0; j < sectors; j++) {
-                const glm::u32 a = j;
-                const glm::u32 b = j + 1;
-                const glm::u32 c = j + sectors + 1;
-                const glm::u32 d = c + 1;
-                m.faces.push_back(tri(a, d, c));
-                m.faces.push_back(tri(a, b, d));
+            for (uint32_t z = 0; z < cellsZ; z++) {
+                for (uint32_t x = 0; x < cellsX; x++) {
+
+                    int a = z * (cellsX + 1) + x;
+                    int b = a + 1;
+                    int c = (z + 1) * (cellsX + 1) + x;
+                    int d = c + 1;
+
+                    // CCW
+                    m.faces.push_back({V(a,a,0), V(c,c,0), V(b,b,0)});
+                    m.faces.push_back({V(b,b,0), V(c,c,0), V(d,d,0)});
+                }
             }
 
-            // Caps
-            auto addCap = [&](const float y, const glm::vec3& normal) {
-                const auto centerIdx = static_cast<glm::u32>(m.vertices.size());
-                m.vertices.emplace_back(0.f, y, 0.f);
+            return m;
+        }
+
+        inline Model3D cylinder(float radius, float height, uint32_t sectors) {
+            Model3D m;
+
+            float h = height * 0.5f;
+            float step = 2.f * glm::pi<float>() / sectors;
+
+            // side vertices
+            for (int y = 0; y < 2; y++) {
+                float yy = y == 0 ? -h : h;
+
+                for (uint32_t j = 0; j <= sectors; j++) {
+                    float t = j * step;
+
+                    glm::vec3 n{cos(t), 0, sin(t)};
+
+                    m.vertices.emplace_back(n.x * radius, yy, n.z * radius);
+                    m.normals.push_back(n);
+                    m.uvs.emplace_back(float(j)/sectors, float(y));
+                }
+            }
+
+            // sides
+            for (uint32_t j = 0; j < sectors; j++) {
+                int a = j;
+                int b = j + 1;
+                int c = j + sectors + 1;
+                int d = c + 1;
+
+                m.faces.push_back({V(a,a,a), V(c,c,c), V(b,b,b)});
+                m.faces.push_back({V(b,b,b), V(c,c,c), V(d,d,d)});
+            }
+
+            // caps helper
+            auto cap = [&](float y, glm::vec3 normal, bool flip) {
+                int center = m.vertices.size();
+                m.vertices.emplace_back(0,y,0);
                 m.normals.push_back(normal);
-                m.uvs.emplace_back(0.5f, 0.5f);
+                m.uvs.emplace_back(0.5,0.5);
 
-                const auto ringStart = static_cast<glm::u32>(m.vertices.size());
-                for (glm::u32 j = 0; j <= sectors; j++) {
-                    const float theta = static_cast<float>(j) * step;
-                    m.vertices.emplace_back( glm::cos(theta) * radius, y,
-                                            glm::sin(theta) * radius );
+                int start = m.vertices.size();
+
+                for (uint32_t j = 0; j <= sectors; j++) {
+                    float t = j * step;
+
+                    m.vertices.emplace_back(cos(t)*radius, y, sin(t)*radius);
                     m.normals.push_back(normal);
-                    m.uvs.emplace_back( glm::cos(theta) * 0.5f + 0.5f,
-                                       glm::sin(theta) * 0.5f + 0.5f );
+                    m.uvs.emplace_back(cos(t)*0.5f+0.5f, sin(t)*0.5f+0.5f);
                 }
 
-                for (glm::u32 j = 0; j < sectors; j++) {
-                    const glm::u32 a = ringStart + j;
-                    const glm::u32 b = ringStart + j + 1;
-                    if (normal.y > 0)
-                        m.faces.push_back({{ {static_cast<glm::i32>(centerIdx),0,static_cast<glm::i32>(centerIdx)},
-                                              {static_cast<glm::i32>(a),        0,static_cast<glm::i32>(a)},
-                                              {static_cast<glm::i32>(b),        0,static_cast<glm::i32>(b)} }});
+                for (uint32_t j = 0; j < sectors; j++) {
+                    int a = start + j;
+                    int b = start + j + 1;
+
+                    if (!flip)
+                        m.faces.push_back({V(center,center,center), V(b,b,b), V(a,a,a)});
                     else
-                        m.faces.push_back({{ {static_cast<glm::i32>(centerIdx),0,static_cast<glm::i32>(centerIdx)},
-                                              {static_cast<glm::i32>(b),        0,static_cast<glm::i32>(b)},
-                                              {static_cast<glm::i32>(a),        0,static_cast<glm::i32>(a)} }});
+                        m.faces.push_back({V(center,center,center), V(a,a,a), V(b,b,b)});
                 }
             };
 
-            addCap(-half, Dir3D::DOWN);
-            addCap( half, Dir3D::UP);
+            cap(-h, {0,-1,0}, true);
+            cap( h, {0, 1,0}, false);
 
             return m;
         }
 
-        inline Model3D cone(const float radius, const float height, const glm::u32 sectors) {
+        inline Model3D cone(float radius, float height, uint32_t sectors) {
             Model3D m;
 
-            const float half = height * 0.5f;
-            const float step = 2.f * glm::pi<float>() / static_cast<float>(sectors);
+            float h = height * 0.5f;
+            float step = 2.f * glm::pi<float>() / sectors;
 
             // Apex
-            m.vertices.emplace_back(0.f, half, 0.f);
-            m.normals.push_back(Dir3D::UP);
+            int apex = m.vertices.size();
+            m.vertices.emplace_back(0, h, 0);
+            m.normals.push_back({0,1,0});
             m.uvs.emplace_back(0.5f, 1.f);
 
-            // Base ring
-            for (glm::u32 j = 0; j <= sectors; j++) {
-                const auto jf = static_cast<float>(j);
-                const float theta  = jf * step;
-                const float cx     = glm::cos(theta);
-                const float cz     = glm::sin(theta);
-                const glm::vec3 n  = glm::normalize(glm::vec3{cx, radius / height, cz});
-                m.vertices.emplace_back( cx * radius, -half, cz * radius );
+            // Side rim vertices
+            for (uint32_t j = 0; j <= sectors; j++) {
+                float t = j * step;
+                glm::vec3 p(cos(t)*radius, -h, sin(t)*radius);
+                glm::vec3 n = glm::normalize(glm::vec3(cos(t), radius/height, sin(t)));
+                m.vertices.push_back(p);
                 m.normals.push_back(n);
-                m.uvs.emplace_back( jf / static_cast<float>(sectors), 0.f );
+                m.uvs.emplace_back(float(j)/sectors, 0.f);
             }
 
-            // Surface faces
-            for (glm::u32 j = 0; j < sectors; j++) {
-                constexpr glm::u32 ringStart = 1;
-                constexpr glm::u32 apexIdx = 0;
-                const glm::u32 a = ringStart + j;
-                const glm::u32 b = ringStart + j + 1;
-                m.faces.push_back({{ {static_cast<glm::i32>(apexIdx), 0, static_cast<glm::i32>(apexIdx)},
-                                       {static_cast<glm::i32>(a),       0, static_cast<glm::i32>(a)},
-                                       {static_cast<glm::i32>(b),       0, static_cast<glm::i32>(b)} }});
+            // Sides
+            for (uint32_t j = 0; j < sectors; j++) {
+                int a = 1 + j;
+                int b = 1 + j + 1;
+                m.faces.push_back({V(apex,apex,apex), V(b,b,b), V(a,a,a)});
             }
 
-            // Base cap
-            const auto capCenter = static_cast<glm::u32>(m.vertices.size());
-            m.vertices.emplace_back(0.f, -half, 0.f);
-            m.normals.push_back(Dir3D::DOWN);
+            // Bottom cap
+            int capCenter = m.vertices.size();
+            m.vertices.emplace_back(0, -h, 0);
+            m.normals.push_back({0,-1,0});
             m.uvs.emplace_back(0.5f, 0.5f);
 
-            const auto capRing = static_cast<glm::u32>(m.vertices.size());
-            for (glm::u32 j = 0; j <= sectors; j++) {
-                const float theta = static_cast<float>(j) * step;
-                m.vertices.emplace_back( glm::cos(theta) * radius, -half,
-                                        glm::sin(theta) * radius );
-                m.normals.push_back(Dir3D::DOWN);
-                m.uvs.emplace_back( glm::cos(theta) * 0.5f + 0.5f,
-                                   glm::sin(theta) * 0.5f + 0.5f );
+            int capStart = m.vertices.size();
+            for (uint32_t j = 0; j <= sectors; j++) {
+                float t = j * step;
+                m.vertices.emplace_back(cos(t)*radius, -h, sin(t)*radius);
+                m.normals.push_back({0,-1,0});
+                m.uvs.emplace_back(cos(t)*0.5f+0.5f, sin(t)*0.5f+0.5f);
             }
 
-            for (glm::u32 j = 0; j < sectors; j++) {
-                const glm::u32 a = capRing + j;
-                const glm::u32 b = capRing + j + 1;
-                m.faces.push_back({{ {static_cast<glm::i32>(capCenter), 0, static_cast<glm::i32>(capCenter)},
-                                       {static_cast<glm::i32>(b),         0, static_cast<glm::i32>(b)},
-                                       {static_cast<glm::i32>(a),         0, static_cast<glm::i32>(a)} }});
+            for (uint32_t j = 0; j < sectors; j++) {
+                int a = capStart + j;
+                int b = capStart + j + 1;
+                m.faces.push_back({V(capCenter,capCenter,capCenter), V(a,a,a), V(b,b,b)});
             }
 
             return m;
         }
 
-        inline Model3D quad(const float width, const float height) {
+        inline Model3D quad(float w, float h) {
             Model3D m;
 
-            const float hw = width  * 0.5f;
-            const float hh = height * 0.5f;
+            float hw = w * 0.5f;
+            float hh = h * 0.5f;
 
-            m.vertices = { {-hw, -hh, 0}, { hw, -hh, 0},
-                            { hw,  hh, 0}, {-hw,  hh, 0} };
-            m.normals  = { Dir3D::FORWARD };
-            m.uvs      = { {0,0}, {1,0}, {1,1}, {0,1} };
+            m.vertices = {
+            {-hw,-hh,0}, {hw,-hh,0},
+            {hw, hh,0},  {-hw,hh,0}
+            };
 
-            m.faces.push_back({{ {0,0,0},{1,1,0},{2,2,0} }});
-            m.faces.push_back({{ {0,0,0},{2,2,0},{3,3,0} }});
+            m.normals = {{0,0,1}};
+            m.uvs = {{0,0},{1,0},{1,1},{0,1}};
+
+            m.faces.push_back({V(0,0,0), V(2,0,0), V(1,0,0)});
+            m.faces.push_back({V(0,0,0), V(3,0,0), V(2,0,0)});
 
             return m;
         }

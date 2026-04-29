@@ -114,7 +114,7 @@ namespace Lattice::Render3D {
             // Back-face cull
             const float cross = (pverts[1].screen.x - pverts[0].screen.x) * (pverts[2].screen.y - pverts[0].screen.y)
                               - (pverts[1].screen.y - pverts[0].screen.y) * (pverts[2].screen.x - pverts[0].screen.x);
-            if (cross >= 0.f) continue;
+            if (cross <= 0.f) continue;
 
             // Diffuse
             Graphite::Color shaded = color;

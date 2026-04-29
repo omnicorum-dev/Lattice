@@ -50,13 +50,13 @@ void frameLoop(const float dt) {
         activeCamera = &activeScene.registry.getComponent<Lattice::Camera3D>(cameraID);
     }
 
-    activeScene.canvas.clear();
+    activeScene.canvas.fill(activeScene.clearColor);
     activeScene.zBuffer.clear();
 
     if (activeCamera) {
         activeScene.registry.each<Lattice::Transform, Lattice::Model3D>(
             [&](Lattice::EntityID id, const Lattice::Transform& t, const Lattice::Model3D& model) {
-                Lattice::Render3D::renderFlat(activeScene.canvas, t, model, *activeCamera, Graphite::Colors::LightBlue, true, Lattice::Dir3D::UP, &(activeScene.zBuffer));
+                Lattice::Render3D::renderFlat(activeScene.canvas, t, model, *activeCamera, Graphite::Colors::LightBlue, true, Lattice::Dir3D::DOWN, &(activeScene.zBuffer));
             }
         );
     }

@@ -6,12 +6,12 @@
 #include <globals.h>
 #include "mediumOpenGL.h"
 
-const int APP_WIDTH = 800;
-const int APP_HEIGHT = 600;
+const int APP_WIDTH = 1920/4;
+const int APP_HEIGHT = 1080/4;
 
 using namespace Lattice;
 
-class SphereBehaviour : public Behaviour {
+class ObjectBehaviour : public Behaviour {
 private:
     Transform* transform = nullptr;
 public:
@@ -21,22 +21,31 @@ public:
 
     void Update(const float dt) override {
         if (transform) {
-            transform->rotateAroundAxis(Dir3D::RIGHT, glm::radians(45.0f) * dt);
+            transform->rotateAroundAxis(Dir3D::UP, glm::radians(45.0f) * dt);
         }
     }
 };
 
+
 LATTICE_HOOK(LateUpdate, float dt) {
-    activeScene.canvas.writeStringBaseline("Hello, World!", 20, 52, 32, Graphite::Colors::White);
+    static float smoothFps = 0.f;
+    float fps = 1.f / dt;
+    smoothFps += (fps - smoothFps) * 0.01f;
+    char buf[256];
+    sprintf(buf, "fps: %3.0f", smoothFps);
+    std::string s = buf;
+    activeScene.canvas.writeStringBaseline(s, 20, 52-16, 16, Graphite::Colors::White);
 }
 
 LATTICE_HOOK(Start) {
-    LOG_DEBUG("Start");
     app->setWindowName("APP");
 
-    LOG_DEBUG("\nGAME_WIDTH: {}\nGAME_HEIGHT: {}\nSCREEN_WIDTH: {}\nSCREEN_HEIGHT: {}", app->GAME_WIDTH, app->GAME_HEIGHT, app->SCREEN_WIDTH, app->SCREEN_HEIGHT);
+    const std::filesystem::path assetPath = app->getAssetRoot();
 
-    std::filesystem::path assetPath = app->getAssetRoot();
+    GLuint crtShader = MediumOpenGL::buildShader(assetPath / "crt.frag");
+    app->setScreenShader(crtShader);
+
+    activeScene.clearColor = Graphite::Colors::DarkGrey;
 
     EntityID id = activeScene.createEntity("Camera");
     activeScene.registry.addComponent(id, Lattice::Camera3D{
@@ -47,7 +56,8 @@ LATTICE_HOOK(Start) {
     });
 
     id = activeScene.createEntity("Sphere");
-    activeScene.registry.addComponent(id, Transform{.position = {0, 0, 3}});
-    activeScene.registry.addComponent(id, Primitives::sphere());
-    addScript<SphereBehaviour>(activeScene, id);
+    activeScene.registry.addComponent(id, Transform{.position = {0, -3, 15}});
+    activeScene.registry.addComponent(id, loadOBJ(assetPath / "Car.obj"));
+    //activeScene.registry.addComponent(id, Primitives::cube());
+    addScript<ObjectBehaviour>(activeScene, id);
 }

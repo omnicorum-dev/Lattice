@@ -29,6 +29,8 @@ namespace Lattice {
         Graphite::Canvas canvas;
         Graphite::Canvas zBuffer;
 
+        Graphite::Color clearColor = {0xff000000};
+
         std::unordered_map<std::string, EntityID> nameIndex;
         std::unordered_map<std::string, std::vector<EntityID>> tagIndex;
         std::unordered_map<EntityID, Entity> entities;
