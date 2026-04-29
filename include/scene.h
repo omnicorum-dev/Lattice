@@ -41,7 +41,7 @@ namespace Lattice {
         }
         */
 
-        Scene() : canvas(GAME_WIDTH, GAME_HEIGHT), zBuffer(GAME_WIDTH, GAME_HEIGHT) {}
+        Scene() : canvas(APP_WIDTH, APP_HEIGHT), zBuffer(APP_WIDTH, APP_HEIGHT) {}
 
         [[nodiscard]] Input& getInput() const {
             return *input;

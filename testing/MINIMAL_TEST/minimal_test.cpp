@@ -50,6 +50,9 @@ void frameLoop(const float dt) {
         activeCamera = &activeScene.registry.getComponent<Lattice::Camera3D>(cameraID);
     }
 
+    activeScene.canvas.clear();
+    activeScene.zBuffer.clear();
+
     if (activeCamera) {
         activeScene.registry.each<Lattice::Transform, Lattice::Model3D>(
             [&](Lattice::EntityID id, const Lattice::Transform& t, const Lattice::Model3D& model) {
@@ -82,13 +85,13 @@ void shutdown() {
 
 // Entry Point
 int main() {
-    app = std::make_unique<MediumOpenGL>(GAME_WIDTH,GAME_HEIGHT,GAME_WIDTH,GAME_HEIGHT, "appName");
+    app = std::make_unique<MediumOpenGL>(APP_WIDTH, APP_HEIGHT, APP_WIDTH, APP_HEIGHT);
+    app->mediumStartup();
     Lattice::Scene scene;
     InputGLFW input;
     scene.input = &input;
     scene.input->initializeInput(app.get());
     Lattice::ActiveScene::set(&scene);
-    app->mediumStartup();
     startup();
     app->mediumRun(frameLoop);
     shutdown();

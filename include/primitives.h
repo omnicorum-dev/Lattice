@@ -306,6 +306,8 @@ namespace Lattice {
         Graphite::Canvas* texture = nullptr;
     };
 
+    Model3D loadOBJ(const std::filesystem::path& filePath);
+
     /**
      * @brief Perspective camera component.
      *
@@ -648,6 +650,93 @@ namespace Lattice {
 
 #ifndef LATTICE_NO_IMPLEMENTATION
 namespace Lattice {
+
+    inline Model3D loadOBJ(const std::filesystem::path& filePath) {
+        Model3D obj;
+
+        std::ifstream file(filePath);
+        if (!file.is_open()) {
+            omni::LOG_ERROR("Could not open file {}", filePath.string());
+            return {};
+        }
+
+        std::string line;
+
+        while (std::getline(file, line)) {
+            std::istringstream ss(line);
+            std::string prefix;
+            ss >> prefix;
+
+            // ---- Vertex positions ----
+            if (prefix == "v") {
+                glm::f32vec3 v;
+                ss >> v.x >> v.y >> v.z;
+
+                obj.vertices.push_back(v);
+            }
+
+            // ---- Vertex normals ----
+            if (prefix == "vn") {
+                glm::f32vec3 n;
+                ss >> n.x >> n.y >> n.z;
+
+                obj.normals.push_back(n);
+            }
+
+            // ---- Texture coordinates ----
+            else if (prefix == "vt") {
+                glm::f32vec2 uv;
+                ss >> uv.x >> uv.y;
+                obj.uvs.push_back(uv);
+            }
+
+            // ---- Faces ----
+            else if (prefix == "f") {
+                std::vector<Lattice::Model3D::FaceIndex> face;
+                std::string vert;
+
+                while (ss >> vert) {
+                    // formats:
+                    // v
+                    // v/vt
+                    // v/vt/vn
+                    // v//vn
+
+                    int vIndex  = -1;
+                    int vnIndex = -1;
+                    int vtIndex = -1;
+
+                    size_t s1 = vert.find('/');
+                    size_t s2 = std::string::npos;
+
+                    if (s1 == s2) {
+                        vIndex = std::stoi(vert) - 1;
+                    } else {
+                        vIndex = std::stoi(vert.substr(0, s1)) - 1;
+
+                        s2 = vert.find('/', s1 + 1);
+
+                        std::string vtStr =
+                            (s2 == std::string::npos)
+                            ? vert.substr(s1 + 1)
+                            : vert.substr(s1 + 1, s2 - s1 - 1);
+
+                        if (!vtStr.empty())
+                            vtIndex = std::stoi(vtStr) - 1;
+                    }
+
+                    face.push_back({
+                        vIndex, vtIndex
+                    });
+                }
+
+                if (face.size() >= 3)
+                    obj.faces.push_back(face);
+            }
+        }
+
+        return obj;
+    }
 
     // ==================== TRANSFORM ====================
 

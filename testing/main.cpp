@@ -99,6 +99,9 @@ using Lattice::EntityID;
 #define WIDTH (800/2)
 #define HEIGHT (600/2)
 
+const int APP_WIDTH = WIDTH;
+const int APP_HEIGHT = HEIGHT;
+
 MediumOpenGL game(WIDTH*2, HEIGHT*2, WIDTH, HEIGHT, "Lattice Example");
 InputGLFW input;
 
@@ -176,7 +179,7 @@ void start() {
     input.initializeInput(&game);
     LOG_DEBUG("Asset Path: {}", assetPath);
     crt = MediumOpenGL::buildShader(assetPath / "crt.frag");
-    game.setScreenShader(crt);
+    //game.setScreenShader(crt);
 
     scene = &Lattice::ActiveScene::get();
     scene->input = &input;

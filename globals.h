@@ -11,7 +11,7 @@
 class MediumOpenGL;
 
 extern std::unique_ptr<MediumOpenGL> app;
-extern const int GAME_WIDTH;
-extern const int GAME_HEIGHT;
+extern const int APP_WIDTH;
+extern const int APP_HEIGHT;
 
 #endif //LATTICE_GLOBALS_H
