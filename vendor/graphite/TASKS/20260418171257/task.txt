@@ -1,0 +1,9 @@
+20260418171257
+z buffer
+50
+closed
+feature,z buffer
+
+
+implement a z buffer for drawing 3d objects
+

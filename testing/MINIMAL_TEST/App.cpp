@@ -55,9 +55,8 @@ LATTICE_HOOK(Start) {
         .farPlane   = 100.f
     });
 
-    id = activeScene.createEntity("Sphere");
+    id = activeScene.createEntity("Car");
     activeScene.registry.addComponent(id, Transform{.position = {0, -3, 15}});
     activeScene.registry.addComponent(id, loadOBJ(assetPath / "Car.obj"));
-    //activeScene.registry.addComponent(id, Primitives::cube());
     addScript<ObjectBehaviour>(activeScene, id);
 }

@@ -1,0 +1,9 @@
+20260417130328
+Add bounds protection to writeChar and writeString
+90
+closed
+bug,text
+
+
+if you try and draw text that ends up outside of the canvas, it crashes!!!
+

@@ -1,0 +1,7 @@
+20260424164436
+new omni font characters
+15
+open
+font,feature
+
+add some symbols and extra characters to the omni font

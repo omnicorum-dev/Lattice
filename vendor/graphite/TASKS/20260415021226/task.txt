@@ -1,0 +1,9 @@
+20260415021226
+drawCanvas
+20
+closed
+feature,canvas
+
+
+add the ability to draw a canvas onto another canvas. Maybe with more of a UV coordinate system so you can use this canvas as a texture. I think that would be cool and helpful
+

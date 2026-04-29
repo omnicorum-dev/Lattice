@@ -1,0 +1,9 @@
+20260418171159
+refine uv / perspective projection
+40
+closed
+uv,3d,projection,optimize
+
+
+uv projection and 3d projection in general is a bit slower than i would like
+

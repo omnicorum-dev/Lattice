@@ -1,0 +1,9 @@
+20260415165811
+User Input and Callback
+45
+closed
+feature,input,medium,lattice
+
+
+add some way of getting user input into the engine/game handler from the medium opengl layer. perhaps this is the point at which we should switch to a new repository and use Graphite and Quartz as submodules. that would be kind of cool i think
+

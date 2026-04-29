@@ -1,0 +1,6 @@
+[submodule "vendor/base-layer"]
+	path = vendor/base-layer
+	url = https://github.com/omnicorum-dev/base-layer
+[submodule "vendor/graphite"]
+	path = vendor/graphite
+	url = https://github.com/omnicorum-dev/graphite

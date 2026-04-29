@@ -1,0 +1,7 @@
+20260416121014
+Refine README
+35
+open
+user,github
+
+Go through the readme with a comb and get out all the bugs and make it clearer/easier to use. Also make any changes to the library that would make it easier to use. Look at readme to identify easy roadblocks
