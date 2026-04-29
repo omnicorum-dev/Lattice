@@ -11,9 +11,10 @@ endif()
 
 add_subdirectory(vendor/Medium)
 
-add_executable(LatticeTesting testing/main.cpp)
+add_executable(LatticeTesting testing/MINIMAL_TEST/minimal_test.cpp testing/MINIMAL_TEST/App.cpp)
 target_include_directories(LatticeTesting PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(LatticeTesting PRIVATE Medium)
 

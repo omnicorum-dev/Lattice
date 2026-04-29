@@ -1,6 +1,6 @@
 #include <mediumOpenGL.h>
 #include <inputGLFW.h>
-#include <lattice.h>
+#include <../include/lattice.h>
 
 
 class CylinderBehaviour : public Lattice::Behaviour {

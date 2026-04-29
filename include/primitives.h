@@ -5,6 +5,8 @@
 #ifndef LATTICE_PRIMITIVES_H
 #define LATTICE_PRIMITIVES_H
 
+#include <graphite.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>

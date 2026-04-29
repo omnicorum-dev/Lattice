@@ -12,6 +12,8 @@
 
 #include <input.h>
 
+#include <globals.h>
+
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -22,7 +24,10 @@ namespace Lattice {
         SceneGraph sceneGraph;
         SignalBus  signalBus;
 
-        Input* input;
+        Input* input = nullptr;
+
+        Graphite::Canvas canvas;
+        Graphite::Canvas zBuffer;
 
         std::unordered_map<std::string, EntityID> nameIndex;
         std::unordered_map<std::string, std::vector<EntityID>> tagIndex;
@@ -35,6 +40,8 @@ namespace Lattice {
             // signals intentionally NOT cleared (depends on design)
         }
         */
+
+        Scene() : canvas(GAME_WIDTH, GAME_HEIGHT), zBuffer(GAME_WIDTH, GAME_HEIGHT) {}
 
         [[nodiscard]] Input& getInput() const {
             return *input;
