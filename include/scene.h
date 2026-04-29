@@ -45,6 +45,11 @@ namespace Lattice {
         }
 
         template<typename T>
+        T* tryGetComponent(EntityID id) {
+            return registry.tryGetComponent<T>(id);
+        }
+
+        template<typename T>
         T& getComponent(EntityID id) {
             return registry.getComponent<T>(id);
         }
@@ -52,6 +57,11 @@ namespace Lattice {
         template<typename T>
         bool hasComponent(EntityID id) const {
             return registry.hasComponent<T>(id);
+        }
+
+        template<typename T>
+        void removeComponent(EntityID id) {
+            registry.removeComponent<T>(id);
         }
 
         template<typename T, typename... Args>
@@ -66,8 +76,8 @@ namespace Lattice {
             auto& [list, started] = registry.getComponent<Behaviours>(e);
 
             auto ptr    = std::make_unique<T>(std::forward<Args>(args)...);
-            ptr->scene  = this;
-            ptr->entity = e;
+            ptr->entity.scene  = this;
+            ptr->entity.id = e;
 
             T& ref = *ptr;
             list.push_back(std::move(ptr));

@@ -35,7 +35,7 @@ void frameLoop(const float dt) {
         {
             if (runStart)
             {
-                s->entity = id;
+                s->entity.id = id;
                 s->Start();
             }
             s->Update(dt);

@@ -25,10 +25,16 @@ namespace Lattice {
         void addComponent(T&& component);
 
         template<typename T>
+        T* tryGetComponent();
+
+        template<typename T>
         T& getComponent();
 
         template<typename T>
         bool hasComponent() const;
+
+        template<typename T>
+        void removeComponent() const;
 
         template<typename T, typename... Args>
         T& addScript(Args&&... args);

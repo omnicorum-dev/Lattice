@@ -15,12 +15,28 @@ namespace Lattice {
 
     class Behaviour {
     public:
-        EntityID entity = NULL_ENTITY;
-        Scene*   scene  = nullptr;
+        //EntityID entity = NULL_ENTITY;
+        //Scene*   scene  = nullptr;
+        Entity entity;
 
     protected:
         template<typename T>
         T& getComponent();  // defined in behaviour_templates.h, included from scene.h
+
+        template<typename T>
+        void addComponent(T&& component);
+
+        template<typename T>
+        T* tryGetComponent();
+
+        template<typename T>
+        bool hasComponent() const;
+
+        template<typename T>
+        void removeComponent() const;
+
+        template<typename T, typename... Args>
+        T& addScript(Args&&... args);
 
     public:
         virtual void Start()          {}

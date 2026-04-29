@@ -75,30 +75,13 @@ function(copy_assets_for TARGET)
     add_dependencies(${TARGET} copy_assets_${TARGET})
 endfunction()
 
+
+
+
+
 # === APPS ===
 add_executable(LatticeTesting example_app.cpp)
 target_link_libraries(LatticeTesting PRIVATE LatticeEngine)
 copy_assets_for(LatticeTesting)
 
 
-
-if(FALSE)
-add_subdirectory(vendor/Medium)
-
-add_executable(LatticeTesting testing/MINIMAL_TEST/minimal_test.cpp testing/MINIMAL_TEST/App.cpp)
-#add_executable(LatticeTesting testing/main.cpp)
-target_include_directories(LatticeTesting PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-target_link_libraries(LatticeTesting PRIVATE Medium)
-
-set(ASSET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-add_custom_target(copy_lattice_assets ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${ASSET_DIR}
-        $<TARGET_FILE_DIR:LatticeTesting>/assets
-)
-
-add_dependencies(LatticeTesting copy_lattice_assets)
-endif()

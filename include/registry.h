@@ -83,7 +83,7 @@ namespace Lattice {
 
 namespace Lattice {
     template<typename T>
-T& Registry::addComponent(EntityID id, T component) {
+    T& Registry::addComponent(EntityID id, T component) {
         auto& storage = getStorage<T>();
         storage.data[id] = std::move(component);
         return storage.data[id];

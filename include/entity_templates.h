@@ -14,6 +14,11 @@ namespace Lattice {
     }
 
     template<typename T>
+    T* Entity::tryGetComponent() {
+        return scene->tryGetComponent<T>(id);
+    }
+
+    template<typename T>
     T& Entity::getComponent() {
         return scene->getComponent<T>(id);
     }
@@ -26,6 +31,11 @@ namespace Lattice {
     template<typename T, typename... Args>
     T& Entity::addScript(Args&&... args) {
         return scene->addScript<T>(id, std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    void Entity::removeComponent() const {
+        scene->removeComponent<T>(id);
     }
 }
 
