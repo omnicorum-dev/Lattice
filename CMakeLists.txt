@@ -24,6 +24,8 @@ add_library(LatticeEngine STATIC
         src/behaviour.cpp
         src/scene.cpp
         src/stb_implementation.cpp
+        src/primitives.cpp
+        src/registry.cpp
 )
 
 # ALL INCLUDES USED

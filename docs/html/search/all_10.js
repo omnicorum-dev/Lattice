@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['e_5ff32_0',['e_f32',['../group__basic__constants.html#ga674be10d0f1797407a0c91a04dfac7b5',1,'omni::basic']]],
+  ['e_5ff64_1',['e_f64',['../group__basic__constants.html#ga6ed59e3d8cd77c5468f3297052eee8a6',1,'omni::basic']]],
+  ['elapsed_5fms_2',['elapsed_ms',['../structomni_1_1basic_1_1_timer.html#ab47d44def095dbbdd8e33bb98053e602',1,'omni::basic::Timer']]],
+  ['elapsed_5fsec_3',['elapsed_sec',['../structomni_1_1basic_1_1_timer.html#a71d810d9cb09bea60c3b5cbed032f49f',1,'omni::basic::Timer']]],
+  ['enable_20aligned_20types_4',['&lt;a class=&quot;anchor&quot; id=&quot;section2_9&quot;&gt;&lt;/a&gt; 2.9. GLM_FORCE_ALIGNED_GENTYPES: Force GLM to enable aligned types',['../md_vendor_2glm_2manual.html#autotoc_md35',1,'']]],
+  ['enable_20swizzle_20operators_5',['&lt;a class=&quot;anchor&quot; id=&quot;section2_14&quot;&gt;&lt;/a&gt; 2.14. GLM_FORCE_SWIZZLE: Enable swizzle operators',['../md_vendor_2glm_2manual.html#autotoc_md40',1,'']]],
+  ['end_6',['end',['../structomni_1_1basic_1_1_profile_result.html#a0dac6c4aa7c29cac1cf2970f78bf3697',1,'omni::basic::ProfileResult']]],
+  ['endsession_7',['EndSession',['../classomni_1_1basic_1_1_benchmark.html#ac3a8a736d5decbbd1fed7aa28153cd93',1,'omni::basic::Benchmark']]],
+  ['entity_8',['Entity',['../struct_lattice_1_1_entity.html',1,'Lattice']]],
+  ['entitydestroyed_9',['EntityDestroyed',['../struct_lattice_1_1_entity_destroyed.html',1,'Lattice']]],
+  ['equivalent_20for_20other_20languages_10',['&lt;a class=&quot;anchor&quot; id=&quot;section10_5&quot;&gt;&lt;/a&gt; 10.5. Equivalent for other languages',['../md_vendor_2glm_2manual.html#autotoc_md221',1,'']]],
+  ['errors_11',['&lt;a class=&quot;anchor&quot; id=&quot;section7_12&quot;&gt;&lt;/a&gt; 7.12. Windows headers cause build errors...',['../md_vendor_2glm_2manual.html#autotoc_md193',1,'']]],
+  ['event_20types_20hat_20states_12',['Event Types &amp;amp; Hat States',['../group__event__types.html',1,'']]],
+  ['eventcallback_13',['EventCallback',['../group__input__codes.html#gad054ae2c398c6bc58356351456f32a77',1,'Input']]],
+  ['eventcallbackimpl_14',['eventCallbackImpl',['../group__input__codes.html#ga385e82c10fef0953ac34693d81722bbb',1,'Input']]],
+  ['eventcallbacks_15',['eventCallbacks',['../group__input__codes.html#ga06cf6c2c89888e446980de478d53b7cb',1,'Input']]],
+  ['explicit_2064_20bits_20floating_20point_20types_16',['&lt;a class=&quot;anchor&quot; id=&quot;section2_13&quot;&gt;&lt;/a&gt; 2.13. GLM_FORCE_SINGLE_ONLY: Removed explicit 64-bits floating point types',['../md_vendor_2glm_2manual.html#autotoc_md39',1,'']]],
+  ['explicit_20conversions_17',['&lt;a class=&quot;anchor&quot; id=&quot;section2_7&quot;&gt;&lt;/a&gt; 2.7. GLM_FORCE_EXPLICIT_CTOR: Requiring explicit conversions',['../md_vendor_2glm_2manual.html#autotoc_md33',1,'']]],
+  ['exposes_20x_20y_20z_20and_20w_20components_18',['&lt;a class=&quot;anchor&quot; id=&quot;section2_15&quot;&gt;&lt;/a&gt; 2.15. GLM_FORCE_XYZW_ONLY: Only exposes x, y, z and w components',['../md_vendor_2glm_2manual.html#autotoc_md43',1,'']]],
+  ['expressions_20support_19',['&lt;a class=&quot;anchor&quot; id=&quot;section7_13&quot;&gt;&lt;/a&gt; 7.13. Constant expressions support',['../md_vendor_2glm_2manual.html#autotoc_md194',1,'']]],
+  ['extension_20headers_20',['&lt;a class=&quot;anchor&quot; id=&quot;section1_3&quot;&gt;&lt;/a&gt; 1.3. Using extension headers',['../md_vendor_2glm_2manual.html#autotoc_md22',1,'']]],
+  ['extensions_21',['extensions',['../md_vendor_2glm_2manual.html#autotoc_md42',1,'2.14.2. Swizzle operations for C++ 98 with language extensions'],['../md_vendor_2glm_2manual.html#autotoc_md48',1,'&lt;a class=&quot;anchor&quot; id=&quot;section2_20&quot;&gt;&lt;/a&gt; 2.20. GLM_FORCE_SILENT_WARNINGS: Silent C++ warnings from language extensions'],['../md_vendor_2glm_2manual.html#autotoc_md51',1,'&lt;a class=&quot;anchor&quot; id=&quot;section3&quot;&gt;&lt;/a&gt; 3. Stable extensions'],['../md_vendor_2glm_2manual.html#autotoc_md151',1,'&lt;a class=&quot;anchor&quot; id=&quot;section4&quot;&gt;&lt;/a&gt; 4. Recommended extensions'],['../md_vendor_2glm_2manual.html#autotoc_md185',1,'&lt;a class=&quot;anchor&quot; id=&quot;section7_4&quot;&gt;&lt;/a&gt; 7.4. Should I use &apos;GTX&apos; extensions?'],['../md_vendor_2glm_2manual.html#autotoc_md187',1,'&lt;a class=&quot;anchor&quot; id=&quot;section7_6&quot;&gt;&lt;/a&gt; 7.6. Where can I find the documentation of extensions?']]],
+  ['external_20links_22',['&lt;a class=&quot;anchor&quot; id=&quot;section10_2&quot;&gt;&lt;/a&gt; 10.2. External links',['../md_vendor_2glm_2manual.html#autotoc_md218',1,'']]]
+];

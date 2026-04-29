@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['a_201_202010_2002_2009_0',['GLM 0.9.A.1 - 2010-02-09',['../dir_e610f09442a71519138b00aa662cc2e7.html#autotoc_md440',1,'']]],
+  ['a_202_202010_2002_2020_1',['GLM 0.9.A.2 - 2010-02-20',['../dir_e610f09442a71519138b00aa662cc2e7.html#autotoc_md438',1,'']]],
+  ['a_202011_2001_2031_2',['GLM 0.9.1.A - 2011-01-31',['../dir_e610f09442a71519138b00aa662cc2e7.html#autotoc_md416',1,'']]],
+  ['a_202011_2011_2011_3',['GLM 0.9.3.A - 2011-11-11',['../dir_e610f09442a71519138b00aa662cc2e7.html#autotoc_md386',1,'']]],
+  ['a_20clip_20space_20between_200_20to_201_4',['&lt;a class=&quot;anchor&quot; id=&quot;section2_17&quot;&gt;&lt;/a&gt; 2.17. GLM_FORCE_DEPTH_ZERO_TO_ONE: Force the use of a clip space between 0 to 1',['../md_vendor_2glm_2manual.html#autotoc_md45',1,'']]],
+  ['a_20glsl_20compiler_20build_20glm_20codes_5',['&lt;a class=&quot;anchor&quot; id=&quot;section7_3&quot;&gt;&lt;/a&gt; 7.3. Does a GLSL compiler build GLM codes?',['../md_vendor_2glm_2manual.html#autotoc_md184',1,'']]],
+  ['a_20pull_20request_6',['Step 4: Submitting a Pull Request',['../md_vendor_2glm_2manual.html#autotoc_md208',1,'']]],
+  ['a_20triangle_20normal_7',['&lt;a class=&quot;anchor&quot; id=&quot;section8_1&quot;&gt;&lt;/a&gt; 8.1. Compute a triangle normal',['../md_vendor_2glm_2manual.html#autotoc_md197',1,'']]],
+  ['acknowledgements_8',['&lt;a class=&quot;anchor&quot; id=&quot;section10_7&quot;&gt;&lt;/a&gt; 10.7. Acknowledgements',['../md_vendor_2glm_2manual.html#autotoc_md223',1,'']]],
+  ['aligned_20types_9',['&lt;a class=&quot;anchor&quot; id=&quot;section2_9&quot;&gt;&lt;/a&gt; 2.9. GLM_FORCE_ALIGNED_GENTYPES: Force GLM to enable aligned types',['../md_vendor_2glm_2manual.html#autotoc_md35',1,'']]],
+  ['aligned_20types_20by_20default_10',['&lt;a class=&quot;anchor&quot; id=&quot;section2_10&quot;&gt;&lt;/a&gt; 2.10. GLM_FORCE_DEFAULT_ALIGNED_GENTYPES: Force GLM to use aligned types by default',['../md_vendor_2glm_2manual.html#autotoc_md36',1,'']]],
+  ['alpha_20blending_11',['Alpha blending',['../class_graphite_1_1_canvas.html#autotoc_md7',1,'']]],
+  ['alternatives_20to_20glm_12',['&lt;a class=&quot;anchor&quot; id=&quot;section10_6&quot;&gt;&lt;/a&gt; 10.6. Alternatives to GLM',['../md_vendor_2glm_2manual.html#autotoc_md222',1,'']]],
+  ['and_20conventions_13',['&lt;a class=&quot;anchor&quot; id=&quot;section7_1&quot;&gt;&lt;/a&gt; 7.1 Why GLM follows GLSL specification and conventions?',['../md_vendor_2glm_2manual.html#autotoc_md182',1,'']]],
+  ['and_20default_20configuration_14',['&lt;a class=&quot;anchor&quot; id=&quot;section2_1&quot;&gt;&lt;/a&gt; 2.1. GLM_FORCE_MESSAGES: Platform auto detection and default configuration',['../md_vendor_2glm_2manual.html#autotoc_md27',1,'']]],
+  ['and_20install_15',['Build and Install',['../dir_e610f09442a71519138b00aa662cc2e7.html#autotoc_md226',1,'']]],
+  ['and_20matrix_20static_20size_16',['&lt;a class=&quot;anchor&quot; id=&quot;section2_18&quot;&gt;&lt;/a&gt; 2.18. GLM_FORCE_SIZE_T_LENGTH: Vector and matrix static size',['../md_vendor_2glm_2manual.html#autotoc_md46',1,'']]],
+  ['and_20w_20components_17',['&lt;a class=&quot;anchor&quot; id=&quot;section2_15&quot;&gt;&lt;/a&gt; 2.15. GLM_FORCE_XYZW_ONLY: Only exposes x, y, z and w components',['../md_vendor_2glm_2manual.html#autotoc_md43',1,'']]],
+  ['angles_20is_20used_20in_20glm_18',['&lt;a class=&quot;anchor&quot; id=&quot;section7_11&quot;&gt;&lt;/a&gt; 7.11. What unit for angles is used in GLM?',['../md_vendor_2glm_2manual.html#autotoc_md192',1,'']]],
+  ['architecture_19',['&lt;a class=&quot;anchor&quot; id=&quot;section2_4&quot;&gt;&lt;/a&gt; 2.4. GLM_FORCE_ARCH_UNKNOWN: Force GLM not to detect the build architecture',['../md_vendor_2glm_2manual.html#autotoc_md30',1,'']]],
+  ['as_20x_20y_20z_20w_20instead_20of_20w_20x_20y_20z_20',['&lt;a class=&quot;anchor&quot; id=&quot;section2_21&quot;&gt;&lt;/a&gt; 2.21. GLM_FORCE_QUAT_DATA_XYZW: Force GLM to store quat data as x,y,z,w instead of w,x,y,z',['../md_vendor_2glm_2manual.html#autotoc_md49',1,'']]],
+  ['ask_20my_20questions_21',['&lt;a class=&quot;anchor&quot; id=&quot;section7_5&quot;&gt;&lt;/a&gt; 7.5. Where can I ask my questions?',['../md_vendor_2glm_2manual.html#autotoc_md186',1,'']]],
+  ['auto_20detection_20and_20default_20configuration_22',['&lt;a class=&quot;anchor&quot; id=&quot;section2_1&quot;&gt;&lt;/a&gt; 2.1. GLM_FORCE_MESSAGES: Platform auto detection and default configuration',['../md_vendor_2glm_2manual.html#autotoc_md27',1,'']]]
+];

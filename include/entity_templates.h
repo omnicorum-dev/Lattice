@@ -6,7 +6,6 @@
 #define LATTICE_ENTITY_TEMPLATES_H
 
 #include "entity.h"
-#include "scene.h"
 
 namespace Lattice {
     template<typename T>

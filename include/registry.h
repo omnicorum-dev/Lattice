@@ -81,114 +81,44 @@ namespace Lattice {
 }
 
 
-#ifndef LATTICE_NO_IMPLEMENTATION
-
 namespace Lattice {
-
-    // ==================== ENTITY ====================
-
-    inline EntityID Registry::createEntity() {
-        EntityID id = _nextID++;
-        _alive.insert(id);
-        return id;
-    }
-
-    inline void Registry::destroyEntity(EntityID id) {
-        _alive.erase(id);
-
-        for (auto& [type, storage] : _components) {
-            storage->destroy(id);
-        }
-    }
-
-    inline bool Registry::alive(EntityID id) const {
-        return _alive.find(id) != _alive.end();
-    }
-
-    inline const std::unordered_set<EntityID>& Registry::entities() const {
-        return _alive;
-    }
-
-    // ==================== STORAGE ACCESS ====================
-
     template<typename T>
-    Storage<T>& Registry::getStorage() {
-        auto type = std::type_index(typeid(T));
-
-        auto it = _components.find(type);
-        if (it == _components.end()) {
-            auto storage = std::make_unique<Storage<T>>();
-            auto* ptr = storage.get();
-            _components[type] = std::move(storage);
-            return *ptr;
-        }
-
-        return *static_cast<Storage<T>*>(it->second.get());
-    }
-
-    template<typename T>
-    const Storage<T>& Registry::getStorage() const {
-        auto it = _components.find(std::type_index(typeid(T)));
-        if (it == _components.end())
-            throw std::runtime_error("Storage does not exist");
-
-        return *static_cast<Storage<T>*>(it->second.get());
-    }
-
-    // ==================== COMPONENT API ====================
-
-    template<typename T>
-    T& Registry::addComponent(EntityID id, T component) {
-        auto& store = getStorage<T>().data;
-        store[id] = std::move(component);
-        return store.at(id);
+T& Registry::addComponent(EntityID id, T component) {
+        auto& storage = getStorage<T>();
+        storage.data[id] = std::move(component);
+        return storage.data[id];
     }
 
     template<typename T>
     T& Registry::getComponent(EntityID id) {
-        auto& store = getStorage<T>().data;
-
-        auto it = store.find(id);
-        if (it == store.end())
-            throw std::runtime_error("Missing component");
-
-        return it->second;
+        return getStorage<T>().data.at(id);
     }
 
     template<typename T>
     const T& Registry::getComponent(EntityID id) const {
-        const auto& store = getStorage<T>().data;
-
-        auto it = store.find(id);
-        if (it == store.end())
-            throw std::runtime_error("Missing component");
-
-        return it->second;
+        return getStorage<T>().data.at(id);
     }
 
     template<typename T>
     T* Registry::tryGetComponent(EntityID id) {
-        auto& store = getStorage<T>().data;
-
-        auto it = store.find(id);
-        return (it == store.end()) ? nullptr : &it->second;
+        auto& storage = getStorage<T>();
+        auto it = storage.data.find(id);
+        return it != storage.data.end() ? &it->second : nullptr;
     }
 
     template<typename T>
     const T* Registry::tryGetComponent(EntityID id) const {
-        const auto& store = getStorage<T>().data;
-
-        auto it = store.find(id);
-        return (it == store.end()) ? nullptr : &it->second;
+        const auto& storage = getStorage<T>();
+        auto it = storage.data.find(id);
+        return it != storage.data.end() ? &it->second : nullptr;
     }
 
     template<typename T>
     bool Registry::hasComponent(EntityID id) const {
-        auto it = _components.find(std::type_index(typeid(T)));
+        auto it = _components.find(typeid(T));
         if (it == _components.end()) return false;
-
-        const auto& store = static_cast<const Storage<T>*>(it->second.get())->data;
-        return store.find(id) != store.end();
+        const auto& storage = static_cast<const Storage<T>&>(*it->second);
+        return storage.data.count(id);
     }
 
     template<typename T>
@@ -196,19 +126,29 @@ namespace Lattice {
         getStorage<T>().data.erase(id);
     }
 
-    // ==================== ITERATION ====================
-
     template<typename... Ts, typename Fn>
     void Registry::each(Fn&& fn) {
         for (EntityID id : _alive) {
-            if ((hasComponent<Ts>(id) && ...)) {
+            if ((hasComponent<Ts>(id) && ...))
                 fn(id, getComponent<Ts>(id)...);
-            }
         }
     }
 
-} // namespace Lattice
+    template<typename T>
+    Storage<T>& Registry::getStorage() {
+        auto& ptr = _components[typeid(T)];
+        if (!ptr) ptr = std::make_unique<Storage<T>>();
+        return static_cast<Storage<T>&>(*ptr);
+    }
 
-#endif
+    template<typename T>
+    const Storage<T>& Registry::getStorage() const {
+        auto it = _components.find(typeid(T));
+        if (it == _components.end())
+            throw std::runtime_error("Storage not found");
+        return static_cast<const Storage<T>&>(*it->second);
+    }
+}
+
 
 #endif //LATTICE_REGISTRY_H

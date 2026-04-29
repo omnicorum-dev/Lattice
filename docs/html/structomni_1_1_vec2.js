@@ -1,0 +1,25 @@
+var structomni_1_1_vec2 =
+[
+    [ "Vec2", "structomni_1_1_vec2.html#aee8b07fda0815d7fea2a02ed95a2d5c5", null ],
+    [ "Vec2", "structomni_1_1_vec2.html#a810b373b3e28310af3a57cfc48a960a7", null ],
+    [ "operator[]", "structomni_1_1_vec2.html#a34a0b1130f70ae4403247a54ae98c4ef", null ],
+    [ "operator[]", "structomni_1_1_vec2.html#a8c92af3639bee146427516ba5929a1ad", null ],
+    [ "cross", "structomni_1_1_vec2.html#a103d9e32021197db900ca151ffce97e3", null ],
+    [ "dot", "structomni_1_1_vec2.html#a03d0a315671474c32b36f2479f31cb20", null ],
+    [ "length", "structomni_1_1_vec2.html#ac896908b442c91079d9126427deb43b8", null ],
+    [ "normalize", "structomni_1_1_vec2.html#ae37ff536f1bbbf40feffa9d75a5d988f", null ],
+    [ "operator*", "structomni_1_1_vec2.html#a56a8cc2ff0ad6cf13d64d07e0a5d5023", null ],
+    [ "operator*", "structomni_1_1_vec2.html#a4b27abc44a89d6f7e6793c8a434a68c3", null ],
+    [ "operator*", "structomni_1_1_vec2.html#a2b881ab5a765ea62bc75167d0b87d8fb", null ],
+    [ "operator+", "structomni_1_1_vec2.html#ab0e097b37379d2c78ce82c507a0e39a3", null ],
+    [ "operator+", "structomni_1_1_vec2.html#a45b85032f6d9af311769986b0597c842", null ],
+    [ "operator+", "structomni_1_1_vec2.html#ab9ca93b7fc4dc93df9e7e935795060ea", null ],
+    [ "operator-", "structomni_1_1_vec2.html#a9984c6240f976a372f98c7d9b8ba038a", null ],
+    [ "operator-", "structomni_1_1_vec2.html#abd7d895f7e8a03b9a5a9d5ca4f68f0e2", null ],
+    [ "operator-", "structomni_1_1_vec2.html#a69bacca313866633d5d5a629e9797dba", null ],
+    [ "operator/", "structomni_1_1_vec2.html#a81e42c47d5b27b341bc6782fde4157cb", null ],
+    [ "operator/", "structomni_1_1_vec2.html#a398f96523df5a89575fb50563d05895e", null ],
+    [ "operator/", "structomni_1_1_vec2.html#a064b240e678bccf1cdece25a88a90a92", null ],
+    [ "operator<<", "structomni_1_1_vec2.html#ae31c7c281d8e023f6fe671a31d62d79c", null ],
+    [ "data", "structomni_1_1_vec2.html#acb35e2e2c98b3e745c4cade7ce9af380", null ]
+];
