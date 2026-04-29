@@ -1,6 +1,0 @@
-[submodule "vendor/base-layer"]
-	path = vendor/base-layer
-	url = https://github.com/omnicorum-dev/base-layer
-[submodule "vendor/glm"]
-	path = vendor/glm
-	url = https://github.com/g-truc/glm.git

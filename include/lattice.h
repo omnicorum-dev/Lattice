@@ -5,11 +5,10 @@
 #ifndef LATTICE_LATTICE_H
 #define LATTICE_LATTICE_H
 
-#include <behaviour.h>
 #include <primitives.h>
-#include <registry.h>
 #include <render3D.h>
 #include <scene.h>
+#include <registry.h>
 #include <scenegraph.h>
 #include <signalbus.h>
 

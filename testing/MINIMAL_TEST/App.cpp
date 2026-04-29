@@ -4,7 +4,7 @@
 #include <hooks.h>
 #include <lattice.h>
 #include <globals.h>
-#include "mediumOpenGL.h"
+#include <mediumOpenGL.h>
 
 const int APP_WIDTH = 1920/4;
 const int APP_HEIGHT = 1080/4;

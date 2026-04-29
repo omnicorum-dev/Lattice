@@ -5,7 +5,7 @@
 #ifndef LATTICE_RENDER3D_H
 #define LATTICE_RENDER3D_H
 
-#include "graphite.h"
+#include "../vendor/graphite/include/graphite.h"
 #include "primitives.h"
 
 namespace Lattice::Render3D {
