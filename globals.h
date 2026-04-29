@@ -6,6 +6,7 @@
 #define LATTICE_GLOBALS_H
 
 #include <memory>
+#define activeScene Lattice::ActiveScene::get()
 
 class MediumOpenGL;
 

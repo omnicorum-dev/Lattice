@@ -6,6 +6,18 @@
 #include <globals.h>
 #include <iostream>
 
+const int GAME_WIDTH = 800;
+const int GAME_HEIGHT = 600;
+
+const std::string appName = "Minimal App";
+
 LATTICE_HOOK(Start) {
-    std::cout << "Start" << std::endl;
+    LOG_DEBUG("Start");
+}
+
+LATTICE_HOOK(Update, float dt) {
+}
+
+LATTICE_HOOK(LateUpdate, float dt) {
+    activeScene.canvas.writeStringBaseline("Hello, World!", 20, 52, 32, Graphite::Colors::White);
 }

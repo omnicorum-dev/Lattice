@@ -14,11 +14,7 @@ extern void UpdateEarly(float dt);
 extern void Update(float dt);
 extern void UpdateAfterDraw(float dt);
 
-const int GAME_WIDTH = 800;
-const int GAME_HEIGHT = 600;
 std::unique_ptr<MediumOpenGL> app = nullptr;
-
-#define activeScene Lattice::ActiveScene::get()
 
 void frameLoop(const float dt) {
     if (Lattice::Hooks::Update)
@@ -64,6 +60,8 @@ void frameLoop(const float dt) {
 
     if (Lattice::Hooks::LateUpdate)
         Lattice::Hooks::LateUpdate(dt);
+
+    app->renderCanvas(activeScene.canvas);
 }
 
 void startup() {
@@ -84,8 +82,7 @@ void shutdown() {
 
 // Entry Point
 int main() {
-
-    app = std::make_unique<MediumOpenGL>(GAME_WIDTH,GAME_HEIGHT,GAME_WIDTH,GAME_HEIGHT, "Minimal Test");
+    app = std::make_unique<MediumOpenGL>(GAME_WIDTH,GAME_HEIGHT,GAME_WIDTH,GAME_HEIGHT, "appName");
     Lattice::Scene scene;
     InputGLFW input;
     scene.input = &input;
