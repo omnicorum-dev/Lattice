@@ -81,6 +81,9 @@ endfunction()
 
 # === APPS ===
 add_executable(LatticeTesting example_app.cpp)
+add_executable(FunApp fun_app.cpp)
+target_link_libraries(FunApp PRIVATE LatticeEngine)
+copy_assets_for(FunApp)
 target_link_libraries(LatticeTesting PRIVATE LatticeEngine)
 copy_assets_for(LatticeTesting)
 

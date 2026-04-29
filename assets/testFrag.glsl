@@ -14,9 +14,9 @@ uniform sampler2D screenTexture;
 
 void main()
 {
-    float waveSpacing = u_resolution.y * 2;
+    float waveSpacing = 15.0;
     float waveSpeed = 200.0;
-    float waveAmount = 0.0015;
+    float waveAmount = 0.5;
 
     vec2 uv = vec2(TexCoord.x, TexCoord.y);
     float shift = sin(uv.y * waveSpacing + u_time * waveSpeed) * waveAmount;

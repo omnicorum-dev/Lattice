@@ -1,0 +1,7 @@
+20260429153829
+MIDI Parsing and User Hooks
+30
+open
+feature,midi,quartz
+
+Make a system in Quartz to be able to run MIDI files like audio, and specifiy ways that the users can interact with the playing MIDI. Maybe use a similar interface to Input (isNoteOn(), setNoteCallback(), setGlobalCallback(), etc.))
